@@ -38,7 +38,7 @@ protected:
     {
         protect_size = test_size;
         row_seed = your_seed;
-        col_seed = your_seed * 0x123456879abcdefLL;
+        col_seed = your_seed * 0x123456879abcdefULL;
     }
 };
 
@@ -56,6 +56,10 @@ template<typename ArrType>
 class LinearGenerate: public Generate
 {
 public:
+    LinearGenerate ()
+    : Generate(1 << 31, 0x32103123343678abULL) 
+    {}
+
     LinearGenerate (const int test_size, unsigned long long your_seed=0)
     : Generate(test_size, your_seed) 
     {}
@@ -132,6 +136,10 @@ template<typename ArrType>
 class DistributionGenerate: public Generate
 {
 public:
+    DistributionGenerate ()
+    : Generate(1 << 31, 0x32103124745678abULL) 
+    {}
+
     DistributionGenerate (const int test_size, unsigned long long your_seed=0)
     : Generate(test_size, your_seed) 
     {}
@@ -296,6 +304,10 @@ template<typename ArrType>
 class BiDistributionGenerate: public BiGenerate
 {
 public:
+    BiDistributionGenerate ()
+    : BiGenerate(1 << 31, 0x32103215745678abULL) 
+    {}
+
     BiDistributionGenerate (const int test_size, unsigned long long your_seed=0)
     : BiGenerate(test_size, your_seed) 
     {}
