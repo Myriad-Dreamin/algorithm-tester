@@ -10,7 +10,6 @@ typedef int arr_element;
 
 
 #include "tools.h"
-#include "sorts.h"
 #include <iostream>
 #include <algorithm>
 
