@@ -3,12 +3,6 @@
 # define TOOLS_H
 
 
-# ifndef TYPEDEF_ARR_ELEMENT
-# define TYPEDEF_ARR_ELEMENT
-typedef int arr_element;
-# endif
-
-
 #include <iostream>
 #include <stdexcept>
 
@@ -154,7 +148,7 @@ public:
  * 
  * inherited from fstream
  */
-class FileHandle: public std::fstream
+class FileHandler: public std::fstream
 {
 private:
     /* 打开方式 */
@@ -162,7 +156,7 @@ private:
     /* opened: 是否打开, newlined: 是否为新行起始位置 (打开时不查询新行) */
     bool opened,newlined;
 public:
-    FileHandle ()
+    FileHandler ()
     {
         opened = false;
         newlined = false;
@@ -172,7 +166,7 @@ public:
      * @para file_path: 文件路径
      * @para open_flag: 打开方式
      */
-    FileHandle (
+    FileHandler (
         const std::string& file_path,
         const std::ios_base::openmode open_flag = std::ios::out | std::ios::app
     ): std::fstream(file_path, open_flag)
@@ -308,7 +302,7 @@ protected:
     std::string self_file_prefix;
 
     /* 数据集文件Handle */
-    FileHandle self_handle;
+    FileHandler self_handle;
 
     /* 数据集Case个数 */
     int case_count;
@@ -649,7 +643,8 @@ public:
 };
 
 /* 打印数组 */
-void print_arr(arr_element const load_arr[], const int len)
+template<typename ArrType>
+void print_arr(ArrType const load_arr[], const int len)
 {
     # ifndef DONOTPRINT
     for (int i = 0; i < len; i++){
@@ -660,8 +655,21 @@ void print_arr(arr_element const load_arr[], const int len)
     return ;
 }
 
+template<typename ArrType>
+void print_arr(std::pair<ArrType, ArrType> const load_arr[], const int len)
+{
+    # ifndef DONOTPRINT
+    for (int i = 0; i < len; i++){
+        std::cout << "(" << load_arr[i].first << ", " << load_arr[i].second << ") ";
+    }
+    std::cout << std::endl;
+    # endif
+    return ;
+}
+
 /* 断言两个数组在[0, len)上等值 */
-void assert_equal(arr_element const left_arr[], arr_element const right_arr[], const int len)
+template<typename ArrType>
+void assert_equal(ArrType const left_arr[], ArrType const right_arr[], const int len)
 {
     for (int i = 0; i < len; i++)
     {

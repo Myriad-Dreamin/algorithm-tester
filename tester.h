@@ -12,6 +12,7 @@ typedef int arr_element;
 #include "tools.h"
 #include <iostream>
 #include <algorithm>
+#include <functional>
 
 /*
  * 测试框架类
@@ -22,7 +23,8 @@ typedef int arr_element;
  * @method: open(), close(), write_open(), write_close(), block(out), newline()
  */
 
-typedef void (*TESTER_FUNCP)();
+typedef std::function<void()> TESTER_FUNCP;
+typedef std::function<void()> CHECKER_FUNCP;
 
 class Tester
 {
@@ -30,19 +32,19 @@ protected:
 
     stop_watch self_watch;
 
-    FileHandle self_file;
+    FileHandler self_file;
     bool write_allowed;
 
-    void run (arr_element const input_arr[], const int len, TESTER_FUNCP test_func)
+    void run (TESTER_FUNCP test_func, CHECKER_FUNCP checker_func=nullptr)
     {
-
         begin_clock();
         test_func();
         end_clock();
 
         # ifdef DEBUG
-        print_arr(arr, len);
-        assert_equal(test_space, std_space, len);
+        if (checker_func != nullptr) {
+            checker_func();
+        }
         # endif
     }
 public:
@@ -76,8 +78,6 @@ public:
     {
         self_watch.clear();
     }
-
-    virtual void primitive (arr_element const input_arr[], const int len) = 0;
 
     void show (const time_unit t_unit=time_unit::musec)
     {
