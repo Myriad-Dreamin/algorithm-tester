@@ -6,7 +6,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <functional>
+#include <utility>
 #include <bitset>
+#include <random>
 #include <ctime>
 #include <windows.h>
 #include <direct.h>		//for mkdir rmdir
@@ -14,6 +17,27 @@
 
 #include <cassert>
 #include <fstream>
+
+
+# define PRINT_ARR_2(A, row, col) \
+    do {\
+        for (int myprinter_i = 0; myprinter_i < row; myprinter_i++) {\
+            for (int myprinter_j = 0; myprinter_j < col; myprinter_j++) {\
+                std::cout << A[myprinter_i][myprinter_j] << " ";\
+            }\
+            std::cout << std::endl;\
+        }\
+    }while(0)\
+
+# define PRINT_ARR_2_PRF(PRF, A, row, col) \
+    do {\
+        for (int myprinter_i = 0; myprinter_i < row; myprinter_i++) {\
+            for (int myprinter_j = 0; myprinter_j < col; myprinter_j++) {\
+                std::cout << PRF << A[myprinter_i][myprinter_j] << " ";\
+            }\
+            std::cout << std::endl;\
+        }\
+    }while(0)\
 
 // in Win32 access = _access, mkdir = _mkdir, rm = _rmdir
 #define ACCESS _access
@@ -683,6 +707,53 @@ unsigned int rand_uint()
 {
     static unsigned int seed = time(nullptr);
     return seed = ((seed * 23333) ^ 19991213);
+}
+
+
+double rand_double(double ranger=1)
+{
+    double mxranger = ((1ULL << 32) - 1) * ((1ULL << 32) - 1);
+    std::mt19937 mt_rand((time(nullptr) * 23333ULL + 1231321LL));
+    return double(mt_rand()) * double(mt_rand()) / mxranger * ranger;
+}
+
+
+double rand_double(double lranger, double rranger)
+{
+    return lranger + rand_double(rranger - lranger);
+}
+
+
+template<typename ArrType>
+ArrType **require_two_dimensional_space(long long row, long long col)
+{
+    ArrType **ret = new ArrType*[row];
+    for (int i = 0; i < row; i++) {
+        ret[i] = new ArrType[col];
+    }
+    return ret;
+}
+
+
+template<typename ArrType>
+void release_two_dimensional_space(ArrType ***space, long long row)
+{
+    for (int i = 0; i < row; i++) {
+        delete[] (*space)[i];
+    }
+    delete *space;
+    *space = nullptr;
+}
+
+
+template<typename ArrType>
+void clear_two_dimensional_space(ArrType **space, long long row, long long col)
+{
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            space[i][j] = 0;
+        }
+    }
 }
 
 # endif // TOOLS_H
