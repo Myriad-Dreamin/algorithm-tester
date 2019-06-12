@@ -34,19 +34,6 @@ protected:
 
     FileHandler self_file;
     bool write_allowed;
-
-    void run (TESTER_FUNCP test_func, CHECKER_FUNCP checker_func=nullptr)
-    {
-        begin_clock();
-        test_func();
-        end_clock();
-
-        # ifdef DEBUG
-        if (checker_func != nullptr) {
-            checker_func();
-        }
-        # endif
-    }
 public:
 
     Tester ()
@@ -62,6 +49,19 @@ public:
     virtual ~Tester ()
     {
         close();
+    }
+
+    void run (TESTER_FUNCP test_func, CHECKER_FUNCP checker_func=nullptr)
+    {
+        begin_clock();
+        test_func();
+        end_clock();
+
+        # ifdef DEBUG
+        if (checker_func != nullptr) {
+            checker_func();
+        }
+        # endif
     }
 
     inline void begin_clock ()

@@ -64,16 +64,16 @@ enum invalid_char_hi: unsigned long long
 
 // do not use -128 ~ -1 as key.
 const std::bitset<128> invalid_char_maps_lo(
-    invalid_char_lo::double_quotes ||
-    invalid_char_lo::asterisk ||
-    invalid_char_lo::slash ||
-    invalid_char_lo::semicon ||
-    invalid_char_lo::less_than ||
-    invalid_char_lo::greater_than ||
+    invalid_char_lo::double_quotes |
+    invalid_char_lo::asterisk |
+    invalid_char_lo::slash |
+    invalid_char_lo::semicon |
+    invalid_char_lo::less_than |
+    invalid_char_lo::greater_than |
     invalid_char_lo::question_mark
 );
 const std::bitset<128> invalid_char_maps_hi(
-    invalid_char_hi::backslash ||
+    invalid_char_hi::backslash |
     invalid_char_hi::vertical_bar
 );
 const std::bitset<128> invalid_char_maps = (invalid_char_maps_hi << 64) | invalid_char_maps_lo;
@@ -291,7 +291,8 @@ public:
     }
 
     /* 读出一个数据块 */
-    bool get(int &in_element)
+    template<typename GetType>
+    bool get(GetType &in_element)
     {
         if (!opened) {
             throw std::domain_error("no file opened");
@@ -324,6 +325,7 @@ protected:
     std::string self_name;
     /* 数据集文件前缀 */
     std::string self_file_prefix;
+    std::string self_file_suffix;
 
     /* 数据集文件Handle */
     FileHandler self_handle;
@@ -411,11 +413,12 @@ public:
      * @para fold_path: 文件夹路径
      * @para dataset_name: 数据集名
      */
-    DataSet(const std::string &fold_path, const std::string &dataset_name)
+    DataSet(const std::string &fold_path, const std::string &dataset_name, const std::string &suffix=".txt")
     {
         set_path(fold_path);
         set_name(dataset_name);
         self_file_prefix = self_path + self_name;
+        self_file_suffix = suffix;
         case_count = 0;
     }
 
@@ -533,7 +536,7 @@ public:
     void new_testcase()
     {
         self_handle.open(
-            self_file_prefix + std::to_string(++case_count) + ".txt",
+            self_file_prefix + std::to_string(++case_count) + self_file_suffix,
             std::ios::ate | std::ios::out
         );
 
@@ -542,7 +545,7 @@ public:
                 "can't create " +
                 self_file_prefix +
                 std::to_string(++case_count) +
-                ".txt"
+                self_file_suffix
             );
         }
     }
@@ -550,10 +553,10 @@ public:
     /* 打开一个Case文件 */
     void open_testcase(const int idx)
     {
-        self_handle.open(self_file_prefix + std::to_string(idx) + ".txt", std::ios::ate | std::ios::out);
+        self_handle.open(self_file_prefix + std::to_string(idx) + self_file_suffix, std::ios::ate | std::ios::out);
 
         if (!self_handle.opening()) {
-            throw std::domain_error("can't open " + self_file_prefix + std::to_string(idx) + ".txt");
+            throw std::domain_error("can't open " + self_file_prefix + std::to_string(idx) + self_file_suffix);
         }
     }
 
@@ -652,7 +655,7 @@ public:
     /* 读取一个testcase到integer数组 */
     void load_testcase_ints(int *dump_space, int idx)
     {
-        self_handle.open(self_file_prefix + std::to_string(idx) + ".txt", std::ios::in);
+        self_handle.open(self_file_prefix + std::to_string(idx) + self_file_suffix, std::ios::in);
         if (!self_handle.opening()) {
             throw std::domain_error(self_file_prefix + std::to_string(idx) + ".txt is not opening");
         }
